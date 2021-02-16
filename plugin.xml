@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<plugin
+    xmlns="http://www.phonegap.com/ns/plugins/1.0"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    id="nfc-manager"
+    version="2.0.0">
+
+    <name>NFC Manager</name>
+
+    <description>NFC plugin for Cordova.</description>
+
+    <license>MIT</license>
+    <keywords>NFC, NDEF, Mifare, ISO 15693, Felica</keywords>
+    <repo>https://github.com/zabojad/cordova-nfc-manager.git</repo>
+    <issue>https://github.com/zabojad/cordova-nfc-manager/issues</issue>
+
+    <platform name="android">
+        <js-module src="www/nfc-manager.js" name="NfcManager">
+            <runs />
+        </js-module>
+
+        <config-file target="res/xml/config.xml" parent="/*">
+            <feature name="NfcManager">
+                <param name="android-package" value="cordova.plugin.NfcManager"/>
+                <param name="onload" value="true" />
+            </feature>
+        </config-file>
+
+        <source-file src="src/android/src/cordova/plugin/NfcManager.java"
+            target-dir="src/cordova/plugin"/>
+        <source-file src="src/android/src/cordova/plugin/Util.java"
+            target-dir="src/cordova/plugin"/>
+
+        <config-file target="AndroidManifest.xml" parent="/manifest">
+            <uses-permission android:name="android.permission.NFC"/>
+            <uses-feature android:name="android.hardware.nfc" android:required="false"/>
+        </config-file>
+
+    </platform>
+
+    <platform name="ios">
+        <js-module src="www/nfc-manager.js" name="NfcManager">
+            <runs />
+        </js-module>
+
+        <config-file parent="/*" target="config.xml">
+            <feature name="NfcManager">
+                <param name="ios-package" value="NfcManager" />
+            </feature>
+        </config-file>
+
+        <!-- https://developer.apple.com/documentation/bundleresources/entitlements/com_apple_developer_nfc_readersession_formats?language=objc -->
+        <config-file parent="com.apple.developer.nfc.readersession.formats" platform="ios" target="*-Debug.plist">
+            <array>
+                <string>NDEF</string>
+                <string>TAG</string>  
+            </array>
+        </config-file>
+        <config-file parent="com.apple.developer.nfc.readersession.formats" platform="ios" target="*-Release.plist">
+            <array>
+                <string>NDEF</string>
+                <string>TAG</string>  
+            </array>
+        </config-file>
+        
+        <header-file src="src/ios/NfcManager.h" />
+        <source-file src="src/ios/NfcManager.m" />
+
+        <!-- frameworks -->
+        <framework src="CoreNFC.framework" weak="true" />
+
+        <preference name="NFC_USAGE_DESCRIPTION" default="Connects, reads and writes NFC Tags" />
+        <config-file target="*-Info.plist" parent="NFCReaderUsageDescription">
+            <string>$NFC_USAGE_DESCRIPTION</string>
+        </config-file>
+    </platform>
+
+
+</plugin>

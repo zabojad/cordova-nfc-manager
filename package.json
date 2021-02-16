@@ -1,0 +1,34 @@
+{
+    "name": "nfc-manager",
+    "version": "2.0.0",
+    "description": "NFC plugin for Cordova.",
+    "cordova": {
+      "id": "nfc-manager",
+      "platforms": [
+        "android",
+        "ios"
+      ]
+    },
+    "repository": {
+      "type": "git",
+      "url": "git+https://github.com/zabojad/cordova-nfc-manager.git"
+    },
+    "keywords": [
+      "NFC",
+      "NDEF",
+      "Mifare",
+      "ISO 15693",
+      "Felica",
+      "ecosystem:cordova",
+      "cordova",
+      "cordova-android",
+      "cordova-ios"
+    ],
+    "author": "Thomas Fétiveau <thomas.fetiveau.tech@gmail.com>",
+    "license": "MIT",
+    "bugs": {
+      "url": "https://github.com/zabojad/cordova-nfc-manager/issues"
+    },
+    "homepage": "https://github.com/zabojad/cordova-nfc-manager#readme"
+  }
+  
