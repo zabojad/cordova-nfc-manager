@@ -299,8 +299,9 @@ NSString* getErrorMessage(NSError *error) {
 
 #pragma mark - Plugin API
 
-- (void)isSupported:(NSString *)tech callback:(CDVInvokedUrlCommand *)command
+- (void)isSupported:(CDVInvokedUrlCommand *)command
 {
+    NSString *tech = [command argumentAtIndex:0];
     CDVPluginResult *pluginResult;
     if ([tech isEqualToString:@""] || [tech isEqualToString:@"Ndef"]) {
         if (@available(iOS 11.0, *)) {
@@ -377,8 +378,9 @@ NSString* getErrorMessage(NSError *error) {
     [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
 }
 
-- (void)registerTagEvent:(NSDictionary *)options callback:(CDVInvokedUrlCommand *)command
+- (void)registerTagEvent:(CDVInvokedUrlCommand *)command
 {
+    NSDictionary *options = [command argumentAtIndex:0];
     if (@available(iOS 11.0, *)) {
         if (session == nil) {
             session = [[NFCNDEFReaderSession alloc]
@@ -487,8 +489,9 @@ NSString* getErrorMessage(NSError *error) {
     }
 }
 
--(void)invalidateSessionWithError:(NSString *)errorMessage callback:(CDVInvokedUrlCommand *)command
+-(void)invalidateSessionWithError:(CDVInvokedUrlCommand *)command
 {
+    NSString *errorMessage = [command argumentAtIndex:0];
     if (@available(iOS 13.0, *)) {
         if (session != nil) {
             [session invalidateSessionWithErrorMessage: errorMessage];
@@ -583,8 +586,9 @@ NSString* getErrorMessage(NSError *error) {
     }
 }
 
-- (void)writeNdefMessage:(NSArray*)bytes callback:(CDVInvokedUrlCommand *)command
+- (void)writeNdefMessage:(CDVInvokedUrlCommand *)command
 {
+    NSArray *bytes = [command argumentAtIndex:0];
     if (@available(iOS 13.0, *)) {
         id<NFCNDEFTag> ndefTag = nil;
         
@@ -622,8 +626,9 @@ NSString* getErrorMessage(NSError *error) {
     }
 }
 
-- (void)sendMifareCommand:(NSArray *)bytes callback:(CDVInvokedUrlCommand *)command
+- (void)sendMifareCommand:(CDVInvokedUrlCommand *)command
 {
+    NSArray *bytes = [command argumentAtIndex:0];
     if (@available(iOS 13.0, *)) {
         if (sessionEx != nil) {
             if (sessionEx.connectedTag) {
@@ -653,8 +658,9 @@ NSString* getErrorMessage(NSError *error) {
     }
 }
 
-- (void)sendFelicaCommand:(NSArray *)bytes callback:(CDVInvokedUrlCommand *)command
+- (void)sendFelicaCommand:(CDVInvokedUrlCommand *)command
 {
+    NSArray *bytes = [command argumentAtIndex:0];
     if (@available(iOS 13.0, *)) {
         if (sessionEx != nil) {
             if (sessionEx.connectedTag) {
@@ -684,8 +690,9 @@ NSString* getErrorMessage(NSError *error) {
     }
 }
 
-- (void)sendCommandAPDUBytes:(NSArray *)bytes callback:(CDVInvokedUrlCommand *)command
+- (void)sendCommandAPDUBytes:(CDVInvokedUrlCommand *)command
 {
+    NSArray *bytes = [command argumentAtIndex:0];
     if (@available(iOS 13.0, *)) {
         if (sessionEx != nil) {
             if (sessionEx.connectedTag) {
@@ -714,8 +721,9 @@ NSString* getErrorMessage(NSError *error) {
     }
 }
 
-- (void)sendCommandAPDU:(NSDictionary *)apduData callback:(CDVInvokedUrlCommand *)command
+- (void)sendCommandAPDU:(CDVInvokedUrlCommand *)command
 {
+    NSDictionary *apduData = [command argumentAtIndex:0];
     if (@available(iOS 13.0, *)) {
         if (sessionEx != nil) {
             if (sessionEx.connectedTag) {
@@ -755,8 +763,9 @@ NSString* getErrorMessage(NSError *error) {
     }
 }
 
-- (void)setAlertMessage: (NSString *)alertMessage callback:(CDVInvokedUrlCommand *)command
+- (void)setAlertMessage:(CDVInvokedUrlCommand *)command
 {
+    NSString *alertMessage = [command argumentAtIndex:0];
     if (@available(iOS 11.0, *)) {
         if (session != nil) {
             session.alertMessage = alertMessage;
@@ -841,7 +850,7 @@ NSString* getErrorMessage(NSError *error) {
             //                @"blockCount": @(blockCount),
             //                @"icReference": @(icReference)
             // }]);
-            CDVPluginResult *pluginResult = 
+            CDVPluginResult *pluginResult =
                 [CDVPluginResult resultWithStatus:CDVCommandStatus_OK
                                 messageAsDictionary:@{
                                     @"dsfid": @(dsfid),
@@ -859,8 +868,9 @@ NSString* getErrorMessage(NSError *error) {
     }
 }
 
-- (void)iso15693_readSingleBlock:(NSDictionary *)options callback:(CDVInvokedUrlCommand *)command
+- (void)iso15693_readSingleBlock:(CDVInvokedUrlCommand *)command
 {
+    NSDictionary *options = [command argumentAtIndex:0];
     if (@available(iOS 13.0, *)) {
         if (!sessionEx || !sessionEx.connectedTag) {
             // callback(@[@"Not connected", [NSNull null]]);
@@ -891,7 +901,7 @@ NSString* getErrorMessage(NSError *error) {
             }
             
             // callback(@[[NSNull null], [self dataToArray:resp]]);
-            CDVPluginResult *pluginResult = 
+            CDVPluginResult *pluginResult =
                 [CDVPluginResult resultWithStatus:CDVCommandStatus_OK
                                 messageAsArray:[self dataToArray:resp]];
             [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
@@ -903,8 +913,9 @@ NSString* getErrorMessage(NSError *error) {
     }
 }
 
-- (void)iso15693_readMultipleBlocks:(NSDictionary *)options callback:(CDVInvokedUrlCommand *)command
+- (void)iso15693_readMultipleBlocks:(CDVInvokedUrlCommand *)command
 {
+    NSDictionary *options = [command argumentAtIndex:0];
     if (@available(iOS 13.0, *)) {
         if (!sessionEx || !sessionEx.connectedTag) {
             // callback(@[@"Not connected", [NSNull null]]);
@@ -941,7 +952,7 @@ NSString* getErrorMessage(NSError *error) {
                 [blocks addObject:[self dataToArray:blockData]];
             }];
             // callback(@[[NSNull null], blocks]);
-            CDVPluginResult *pluginResult = 
+            CDVPluginResult *pluginResult =
                 [CDVPluginResult resultWithStatus:CDVCommandStatus_OK
                                 messageAsArray:blocks];
             [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
@@ -953,8 +964,9 @@ NSString* getErrorMessage(NSError *error) {
     }
 }
 
-- (void)iso15693_writeSingleBlock:(NSDictionary *)options callback:(CDVInvokedUrlCommand *)command
+- (void)iso15693_writeSingleBlock:(CDVInvokedUrlCommand *)command
 {
+    NSDictionary *options = [command argumentAtIndex:0];
     if (@available(iOS 13.0, *)) {
         if (!sessionEx || !sessionEx.connectedTag) {
             // callback(@[@"Not connected", [NSNull null]]);
@@ -997,8 +1009,9 @@ NSString* getErrorMessage(NSError *error) {
     }
 }
 
-- (void)iso15693_lockBlock:(NSDictionary *)options callback:(CDVInvokedUrlCommand *)command
+- (void)iso15693_lockBlock:(CDVInvokedUrlCommand *)command
 {
+    NSDictionary *options = [command argumentAtIndex:0];
     if (@available(iOS 13.0, *)) {
         if (!sessionEx || !sessionEx.connectedTag) {
             // callback(@[@"Not connected", [NSNull null]]);
@@ -1029,8 +1042,9 @@ NSString* getErrorMessage(NSError *error) {
     }
 }
 
-- (void)iso15693_writeAFI:(NSDictionary *)options callback:(CDVInvokedUrlCommand *)command
+- (void)iso15693_writeAFI:(CDVInvokedUrlCommand *)command
 {
+    NSDictionary *options = [command argumentAtIndex:0];
     if (@available(iOS 13.0, *)) {
         if (!sessionEx || !sessionEx.connectedTag) {
             // callback(@[@"Not connected", [NSNull null]]);
@@ -1061,8 +1075,9 @@ NSString* getErrorMessage(NSError *error) {
     }
 }
 
-- (void)iso15693_lockAFI:(NSDictionary *)options callback:(CDVInvokedUrlCommand *)command
+- (void)iso15693_lockAFI:(CDVInvokedUrlCommand *)command
 {
+    NSDictionary *options = [command argumentAtIndex:0];
     if (@available(iOS 13.0, *)) {
         if (!sessionEx || !sessionEx.connectedTag) {
             // callback(@[@"Not connected", [NSNull null]]);
@@ -1091,8 +1106,9 @@ NSString* getErrorMessage(NSError *error) {
     }
 }
 
-- (void)iso15693_writeDSFID:(NSDictionary *)options callback:(CDVInvokedUrlCommand *)command
+- (void)iso15693_writeDSFID:(CDVInvokedUrlCommand *)command
 {
+    NSDictionary *options = [command argumentAtIndex:0];
     if (@available(iOS 13.0, *)) {
         if (!sessionEx || !sessionEx.connectedTag) {
             // callback(@[@"Not connected", [NSNull null]]);
@@ -1123,8 +1139,9 @@ NSString* getErrorMessage(NSError *error) {
     }
 }
 
-- (void)iso15693_lockDSFID:(NSDictionary *)options callback:(CDVInvokedUrlCommand *)command
+- (void)iso15693_lockDSFID:(CDVInvokedUrlCommand *)command
 {
+    NSDictionary *options = [command argumentAtIndex:0];
     if (@available(iOS 13.0, *)) {
         if (!sessionEx || !sessionEx.connectedTag) {
             // callback(@[@"Not connected", [NSNull null]]);
@@ -1154,8 +1171,9 @@ NSString* getErrorMessage(NSError *error) {
     }
 }
 
-- (void)iso15693_resetToReady:(NSDictionary *)options callback:(CDVInvokedUrlCommand *)command
+- (void)iso15693_resetToReady:(CDVInvokedUrlCommand *)command
 {
+    NSDictionary *options = [command argumentAtIndex:0];
     if (@available(iOS 13.0, *)) {
         if (!sessionEx || !sessionEx.connectedTag) {
             // callback(@[@"Not connected", [NSNull null]]);
@@ -1184,8 +1202,9 @@ NSString* getErrorMessage(NSError *error) {
     }
 }
 
-- (void)iso15693_select:(NSDictionary *)options callback:(CDVInvokedUrlCommand *)command
+- (void)iso15693_select:(CDVInvokedUrlCommand *)command
 {
+    NSDictionary *options = [command argumentAtIndex:0];
     if (@available(iOS 13.0, *)) {
         if (!sessionEx || !sessionEx.connectedTag) {
             // callback(@[@"Not connected", [NSNull null]]);
@@ -1241,8 +1260,9 @@ NSString* getErrorMessage(NSError *error) {
     }
 }
 
-- (void)iso15693_customCommand:(NSDictionary *)options callback:(CDVInvokedUrlCommand *)command
+- (void)iso15693_customCommand:(CDVInvokedUrlCommand *)command
 {
+    NSDictionary *options = [command argumentAtIndex:0];
     if (@available(iOS 13.0, *)) {
         if (!sessionEx || !sessionEx.connectedTag) {
             // callback(@[@"Not connected", [NSNull null]]);
@@ -1275,8 +1295,9 @@ NSString* getErrorMessage(NSError *error) {
     }
 }
 
-- (void)iso15693_extendedReadSingleBlock:(NSDictionary *)options callback:(CDVInvokedUrlCommand *)command
+- (void)iso15693_extendedReadSingleBlock:(CDVInvokedUrlCommand *)command
 {
+    NSDictionary *options = [command argumentAtIndex:0];
     if (@available(iOS 13.0, *)) {
         if (!sessionEx || !sessionEx.connectedTag) {
             // callback(@[@"Not connected", [NSNull null]]);
@@ -1307,8 +1328,9 @@ NSString* getErrorMessage(NSError *error) {
     }
 }
 
-- (void)iso15693_extendedWriteSingleBlock:(NSDictionary *)options callback:(CDVInvokedUrlCommand *)command
+- (void)iso15693_extendedWriteSingleBlock:(CDVInvokedUrlCommand *)command
 {
+    NSDictionary *options = [command argumentAtIndex:0];
     if (@available(iOS 13.0, *)) {
         if (!sessionEx || !sessionEx.connectedTag) {
             // callback(@[@"Not connected", [NSNull null]]);
@@ -1351,8 +1373,9 @@ NSString* getErrorMessage(NSError *error) {
     }
 }
 
-- (void)iso15693_extendedLockBlock:(NSDictionary *)options callback:(CDVInvokedUrlCommand *)command
+- (void)iso15693_extendedLockBlock:(CDVInvokedUrlCommand *)command
 {
+    NSDictionary *options = [command argumentAtIndex:0];
     if (@available(iOS 13.0, *)) {
         if (!sessionEx || !sessionEx.connectedTag) {
             // callback(@[@"Not connected", [NSNull null]]);
