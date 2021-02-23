@@ -26,6 +26,7 @@ NSString* getErrorMessage(NSError *error) {
 @implementation NfcManager {
     NSDictionary *nfcTechTypes;
     NSArray *techRequestTypes;
+    NSString* channelCallbackId;
     // RCTResponseSenderBlock techRequestCallback;
     CDVInvokedUrlCommand *techRequestCallback;
     id<NFCNDEFTag> connectedNdefTag;
@@ -78,15 +79,32 @@ NSString* getErrorMessage(NSError *error) {
     connectedNdefTag = nil;
 }
 
-// - (NSArray<NSString *> *)supportedEvents
-// {
-//     return @[
-//              @"NfcManagerDiscoverTag",
-//              @"NfcManagerSessionClosed"
-//              ];
-// }
+- (NSArray<NSString *> *)supportedEvents
+{
+    return @[
+        @"NfcManagerDiscoverTag",
+        @"NfcManagerSessionClosed"
+    ];
+}
 
 #pragma mark helpers
+
+-(void) sendEventWithName:(NSString *)type body:(NSDictionary *)data API_AVAILABLE(ios(11.0)) {
+    NSLog(@"sendEvent");
+    
+    NSMutableDictionary *eventPayload = [NSMutableDictionary new];
+    eventPayload[@"type"] = type;
+    eventPayload[@"data"] = data;
+
+    if (channelCallbackId) {
+        NSLog(@"Sending event via channelCallbackId");
+        
+        CDVPluginResult *pluginResult =
+            [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDictionary:eventPayload];
+        [pluginResult setKeepCallback:[NSNumber numberWithBool:YES]];
+        [self.commandDelegate sendPluginResult:pluginResult callbackId:channelCallbackId];
+    }
+}
 
 - (NSData *)arrayToData: (NSArray *) array
 {
@@ -193,16 +211,14 @@ NSString* getErrorMessage(NSError *error) {
 {
     NSLog(@"readerSession:didDetectNDEFs");
     if ([messages count] > 0) {
-        // TODO
         // parse the first message for now
-        // [self sendEventWithName:@"NfcManagerDiscoverTag"
-        //                    body:@{@"ndefMessage": [self convertNdefMessage:messages[0]]}];
+        [self sendEventWithName:@"NfcManagerDiscoverTag"
+                           body:@{@"ndefMessage": [self convertNdefMessage:messages[0]]}];
 
 
     } else {
-        // TODO
-        // [self sendEventWithName:@"NfcManagerDiscoverTag"
-        //                    body:@{@"ndefMessage": @[]}];
+        [self sendEventWithName:@"NfcManagerDiscoverTag"
+                           body:@{@"ndefMessage": @[]}];
     }
 }
 
@@ -217,9 +233,8 @@ NSString* getErrorMessage(NSError *error) {
     }
     
     [self reset];
-    // TODO
-    // [self sendEventWithName:@"NfcManagerSessionClosed"
-    //                    body:@{}];
+    [self sendEventWithName:@"NfcManagerSessionClosed"
+                       body:@{}];
 }
 
 - (void)tagReaderSession:(NFCTagReaderSession *)session didDetectTags:(NSArray<__kindof id<NFCTag>> *)tags
@@ -281,9 +296,9 @@ NSString* getErrorMessage(NSError *error) {
     }
 
     [self reset];
-    // TODO
-    // [self sendEventWithName:@"NfcManagerSessionClosed"
-    //                    body:@{}];
+    
+    [self sendEventWithName:@"NfcManagerSessionClosed"
+                       body:@{}];
 }
 
 - (void)tagReaderSessionDidBecomeActive:(NFCTagReaderSession *)session
@@ -298,6 +313,11 @@ NSString* getErrorMessage(NSError *error) {
 // }
 
 #pragma mark - Plugin API
+
+- (void)channel:(CDVInvokedUrlCommand *)command {
+    // the channel is used to send NFC tag data to the web view
+    channelCallbackId = [command.callbackId copy];
+}
 
 - (void)isSupported:(CDVInvokedUrlCommand *)command
 {

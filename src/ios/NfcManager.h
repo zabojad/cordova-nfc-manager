@@ -50,6 +50,9 @@
 - (void)iso15693_extendedWriteSingleBlock:(CDVInvokedUrlCommand *)command;
 - (void)iso15693_extendedLockBlock:(CDVInvokedUrlCommand *)command;
 
+// Internal implementation
+- (void)channel:(CDVInvokedUrlCommand *)command;
+
 @end
 
 #endif

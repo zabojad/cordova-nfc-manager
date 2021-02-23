@@ -13,7 +13,7 @@
     <keywords>NFC, NDEF, Mifare, ISO 15693, Felica</keywords>
     <repo>https://github.com/zabojad/cordova-nfc-manager.git</repo>
     <issue>https://github.com/zabojad/cordova-nfc-manager/issues</issue>
-
+<!--
     <platform name="android">
         <js-module src="www/nfc-manager.js" name="NfcManager">
             <runs />
@@ -37,7 +37,7 @@
         </config-file>
 
     </platform>
-
+-->
     <platform name="ios">
         <js-module src="www/nfc-manager.js" name="NfcManager">
             <runs />

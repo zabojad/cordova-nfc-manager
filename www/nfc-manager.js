@@ -150,9 +150,9 @@ var Iso15693HandlerIOS = {
 }
 
 var NfcManager = {
+    _clientListeners: {},
     // constructor() {
     // this.cleanUpTagRegistration = false;
-    // this._subscribeNativeEvents();
 
     // if (Platform.OS === 'ios') {
     //     this._iso15693HandlerIOS = new Iso15693HandlerIOS();
@@ -186,7 +186,7 @@ var NfcManager = {
 
     start: function(){
         return new Promise(function(resolve, reject) {
-            // callNative('start');
+            NfcManager._subscribeNativeEvents();
             cordova.exec(resolve, reject, 'NfcManager', 'start', []);
         });
     },
@@ -449,46 +449,49 @@ var NfcManager = {
     // -------------------------------------
     // private
     // -------------------------------------
-    // _subscribeNativeEvents = () => {
-    //     NfcManager._subscriptions = {}
-    //     NfcManager._clientListeners = {};
-    //     NfcManager._subscriptions[NfcEvents.DiscoverTag] = NfcManagerEmitter.addListener(
-    //     NfcEvents.DiscoverTag, NfcManager._onDiscoverTag
-    //     );
+    _subscribeNativeEvents: function(){
+        // we do not have "events" in the cordova API so we use a "channel" instead
+        function success(message) {
+            if (!message.type) { 
+                console.log(message);
+            } else {
+                if (message.type == NfcEvents.DiscoverTag) {
+                    NfcManager._onDiscoverTag(message.data);
+                }
+                else if (message.type == NfcEvents.SessionClosed) {
+                    NfcManager._onSessionClosedIOS();
+                }
+                else if (message.type == NfcEvents.StateChanged) {
+                    NfcManager._onStateChangedAndroid(message.data);
+                }
+                else {
+                    console.warn('Unexpected NfcManager event: ',message);
+                }
+            }
+        }
+        cordova.exec(success, null, 'NfcManager', 'channel', []);
+    },
 
-    //     if (Platform.OS === 'ios') {
-    //     NfcManager._subscriptions[NfcEvents.SessionClosed] = NfcManagerEmitter.addListener(
-    //         NfcEvents.SessionClosed, NfcManager._onSessionClosedIOS
-    //     );
-    //     }
+    _onDiscoverTag: function(tag){
+        const callback = NfcManager._clientListeners[NfcEvents.DiscoverTag];
+        if (callback) {
+            callback(tag);
+        }
+    },
 
-    //     if (Platform.OS === 'android') {
-    //     NfcManager._subscriptions[NfcEvents.StateChanged] = NfcManagerEmitter.addListener(
-    //         NfcEvents.StateChanged, NfcManager._onStateChangedAndroid
-    //     );
-    //     }
-    // }
+    _onSessionClosedIOS: function(){
+        const callback = NfcManager._clientListeners[NfcEvents.SessionClosed];
+        if (callback) {
+            callback();
+        }
+    },
 
-    // _onDiscoverTag = tag => {
-    //     const callback = NfcManager._clientListeners[NfcEvents.DiscoverTag];
-    //     if (callback) {
-    //     callback(tag);
-    //     }
-    // }
-
-    // _onSessionClosedIOS = () => {
-    //     const callback = NfcManager._clientListeners[NfcEvents.SessionClosed];
-    //     if (callback) {
-    //     callback();
-    //     }
-    // }
-
-    // _onStateChangedAndroid = state => {
-    //     const callback = NfcManager._clientListeners[NfcEvents.StateChanged];
-    //     if (callback) {
-    //     callback(state);
-    //     }
-    // }
+    _onStateChangedAndroid: function(state){
+        const callback = NfcManager._clientListeners[NfcEvents.StateChanged];
+        if (callback) {
+            callback(state);
+        }
+    },
 
     // -------------------------------------
     // Android private
